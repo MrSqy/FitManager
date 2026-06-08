@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Çalışanlar{% endblock %}
+{% block page_title %}Çalışanlar{% endblock %}
+{% block page_subtitle %}PT, diyetisyen ve operasyon personeli{% endblock %}
+
+{% block content %}
+<section class="toolbar">
+    <form class="filters" method="get">
+        <select name="rol">
+            <option value="TUM" {{ 'selected' if rol == 'TUM' else '' }}>Tüm Roller</option>
+            <option value="PT" {{ 'selected' if rol == 'PT' else '' }}>PT</option>
+            <option value="DIYETISYEN" {{ 'selected' if rol == 'DIYETISYEN' else '' }}>Diyetisyen</option>
+            <option value="DIGER" {{ 'selected' if rol == 'DIGER' else '' }}>Diğer</option>
+        </select>
+        <button class="button secondary" type="submit">Filtrele</button>
+    </form>
+    <a class="button primary" href="{{ url_for('calisan_yeni') }}">Yeni Çalışan</a>
+</section>
+
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Telefon</th>
+                    <th>Rol</th>
+                    <th>Maaş</th>
+                    <th>Mesai</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for calisan in calisanlar %}
+                    <tr>
+                        <td>{{ calisan.ad }} {{ calisan.soyad }}</td>
+                        <td>{{ calisan.telefon }}</td>
+                        <td><span class="badge">{{ calisan.rol }}</span></td>
+                        <td>{{ calisan.maas|money }}</td>
+                        <td>{{ calisan.mesai_baslangic }} - {{ calisan.mesai_bitis }}</td>
+                        <td>
+                            <a class="button small" href="{{ url_for('calisan_duzenle', calisan_id=calisan.calisan_id) }}">Düzenle</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="empty">Çalışan bulunamadı.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

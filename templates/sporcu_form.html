@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Sporcu Düzenle' if sporcu else 'Yeni Sporcu' }}{% endblock %}
+{% block page_title %}{{ 'Sporcu Düzenle' if sporcu else 'Yeni Sporcu' }}{% endblock %}
+{% block page_subtitle %}Temel sporcu bilgileri{% endblock %}
+
+{% block content %}
+<section class="panel narrow">
+    <form class="form-grid" method="post">
+        <label>
+            Ad
+            <input name="ad" value="{{ sporcu.ad if sporcu else '' }}" required maxlength="50">
+        </label>
+        <label>
+            Soyad
+            <input name="soyad" value="{{ sporcu.soyad if sporcu else '' }}" required maxlength="50">
+        </label>
+        <label>
+            Telefon
+            <input name="telefon" value="{{ sporcu.telefon if sporcu else '' }}" required maxlength="20">
+        </label>
+        <label>
+            Kayıt Tarihi
+            <input type="date" name="kayit_tarihi" value="{{ sporcu.kayit_tarihi if sporcu else today }}" required>
+        </label>
+        {% if sporcu %}
+            <label class="check">
+                <input type="checkbox" name="aktif_mi" {{ 'checked' if sporcu.aktif_mi else '' }}>
+                Aktif
+            </label>
+        {% endif %}
+        <div class="form-actions">
+            <a class="button ghost" href="{{ url_for('sporcular') }}">Vazgeç</a>
+            <button class="button primary" type="submit">Kaydet</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

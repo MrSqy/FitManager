@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Yeni Ödeme{% endblock %}
+{% block page_title %}Yeni Ödeme{% endblock %}
+{% block page_subtitle %}Üyelik bazlı ödeme girişi{% endblock %}
+
+{% block content %}
+<section class="panel narrow">
+    <form class="form-grid" method="post" id="paymentForm">
+        <label>
+            Üyelik
+            <select name="uyelik_id" id="membershipSelect" required>
+                <option value="">Seçiniz</option>
+                {% for row in memberships %}
+                    <option value="{{ row.uyelik_id }}" data-kalan="{{ row.kalan }}">
+                        #{{ row.uyelik_id }} - {{ row.sporcu_ad }} - kalan {{ row.kalan|money }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Tutar
+            <input type="number" step="0.01" name="tutar" id="amountInput" required>
+        </label>
+        <label>
+            Ödeme Tarihi
+            <input type="date" name="odeme_tarihi" value="{{ today }}" required>
+        </label>
+        <label>
+            Ödeme Yöntemi
+            <select name="odeme_yontemi" id="methodSelect" required>
+                <option value="KART">Kart</option>
+                <option value="NAKIT">Nakit</option>
+                <option value="HAVALE">Havale</option>
+            </select>
+        </label>
+        <p class="inline-note" id="paymentNote">Kalan borç seçime göre görünür.</p>
+        <p class="inline-note" id="interestNote"></p>
+        <div class="form-actions">
+            <a class="button ghost" href="{{ url_for('odemeler') }}">Vazgeç</a>
+            <button class="button primary" type="submit">Ödeme Ekle</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const membershipSelect = document.getElementById("membershipSelect");
+const amountInput = document.getElementById("amountInput");
+const paymentNote = document.getElementById("paymentNote");
+const methodSelect = document.getElementById("methodSelect");
+const interestNote = document.getElementById("interestNote");
+
+const tl = (n) => new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(n);
+
+function updatePaymentLimit() {
+    const kalan = Number(membershipSelect.selectedOptions[0]?.dataset.kalan || 0);
+    amountInput.max = kalan || "";
+    paymentNote.textContent = kalan
+        ? `Kalan borç: ${tl(kalan)}`
+        : "Kalan borç seçime göre görünür.";
+}
+
+function updateInterest() {
+    const tutar = Number(amountInput.value || 0);
+    if (methodSelect.value === "KART" && tutar > 0) {
+        const faiz = tutar * 0.05;
+        interestNote.textContent = `Kart faizi (%5): ${tl(faiz)} — toplam tahsilat: ${tl(tutar + faiz)}`;
+    } else {
+        interestNote.textContent = "";
+    }
+}
+
+membershipSelect.addEventListener("change", updatePaymentLimit);
+methodSelect.addEventListener("change", updateInterest);
+amountInput.addEventListener("input", updateInterest);
+updatePaymentLimit();
+updateInterest();
+</script>
+{% endblock %}

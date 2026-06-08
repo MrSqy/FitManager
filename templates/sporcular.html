@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Sporcular{% endblock %}
+{% block page_title %}Sporcular{% endblock %}
+{% block page_subtitle %}Kayıt, durum ve aktif üyelik takibi{% endblock %}
+
+{% block content %}
+<section class="toolbar">
+    <form class="filters" method="get">
+        <input type="search" name="q" value="{{ q }}" placeholder="Ad, soyad veya telefon">
+        <select name="status">
+            <option value="aktif" {{ 'selected' if status == 'aktif' else '' }}>Aktif</option>
+            <option value="pasif" {{ 'selected' if status == 'pasif' else '' }}>Pasif</option>
+            <option value="tum" {{ 'selected' if status == 'tum' else '' }}>Tümü</option>
+        </select>
+        <button class="button secondary" type="submit">Filtrele</button>
+    </form>
+    <a class="button primary" href="{{ url_for('sporcu_yeni') }}">Yeni Sporcu</a>
+</section>
+
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Telefon</th>
+                    <th>Kayıt</th>
+                    <th>Durum</th>
+                    <th>Plan</th>
+                    <th>Kalan</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sporcu in sporcular %}
+                    <tr>
+                        <td>{{ sporcu.ad }} {{ sporcu.soyad }}</td>
+                        <td>{{ sporcu.telefon }}</td>
+                        <td>{{ sporcu.kayit_tarihi|datefmt }}</td>
+                        <td>
+                            <span class="badge {{ 'ok' if sporcu.aktif_mi else 'muted' }}">
+                                {{ 'Aktif' if sporcu.aktif_mi else 'Pasif' }}
+                            </span>
+                        </td>
+                        <td>
+                            {{ sporcu.plan_adi or '-' }}
+                            {% if sporcu.plan_adi and sporcu.uyelik_durum != 'AKTIF' %}
+                                <span class="badge muted">{{ sporcu.uyelik_durum|lower }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ sporcu.kalan_gun if sporcu.kalan_gun is not none else '-' }}</td>
+                        <td class="actions">
+                            <a class="button small" href="{{ url_for('sporcu_duzenle', sporcu_id=sporcu.sporcu_id) }}">Düzenle</a>
+                            {% if sporcu.uyelik_id %}
+                                <a class="button small secondary" href="{{ url_for('uyelik_detay', uyelik_id=sporcu.uyelik_id) }}">Üyelik</a>
+                            {% endif %}
+                            {% if sporcu.aktif_mi %}
+                                <form method="post" action="{{ url_for('sporcu_pasife_al', sporcu_id=sporcu.sporcu_id) }}">
+                                    <button class="button small danger" type="submit">Pasife Al</button>
+                                </form>
+                            {% else %}
+                                {% if sporcu.uye_yenilenebilir %}
+                                    <form method="post" action="{{ url_for('sporcu_aktif', sporcu_id=sporcu.sporcu_id) }}">
+                                        <button class="button small primary" type="submit">Aktife Al</button>
+                                    </form>
+                                {% endif %}
+                                <form method="post"
+                                      action="{{ url_for('sporcu_sil', sporcu_id=sporcu.sporcu_id) }}"
+                                      onsubmit="return confirm('{{ sporcu.ad }} {{ sporcu.soyad }} kalıcı olarak silinecek. Ödeme kayıtları üye adıyla korunur. Onaylıyor musunuz?');">
+                                    <button class="button small danger" type="submit">Sil</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="7" class="empty">Kayıt bulunamadı.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

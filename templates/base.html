@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Spor Salonu Yönetimi{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">SS</span>
+            <div>
+                <strong>Spor Salonu</strong>
+                <small>Yönetim Paneli</small>
+            </div>
+        </div>
+        <nav class="nav">
+            <a class="{{ 'active' if request.endpoint == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a class="{{ 'active' if request.endpoint in ['sporcular', 'sporcu_yeni', 'sporcu_duzenle'] else '' }}" href="{{ url_for('sporcular') }}">Sporcular</a>
+            <a class="{{ 'active' if request.endpoint in ['uyelik_yeni', 'uyelik_detay'] else '' }}" href="{{ url_for('uyelik_yeni') }}">Üyelik</a>
+            <a class="{{ 'active' if request.endpoint in ['odemeler', 'odeme_yeni'] else '' }}" href="{{ url_for('odemeler') }}">Ödemeler</a>
+            <a class="{{ 'active' if request.endpoint in ['calisanlar', 'calisan_yeni', 'calisan_duzenle'] else '' }}" href="{{ url_for('calisanlar') }}">Çalışanlar</a>
+            <a class="{{ 'active' if request.endpoint == 'sorgular' else '' }}" href="{{ url_for('sorgular') }}">Sorgular</a>
+            <a class="{{ 'active' if request.endpoint == 'loglar' else '' }}" href="{{ url_for('loglar') }}">Loglar</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1>{% block page_title %}Panel{% endblock %}</h1>
+                <p>{% block page_subtitle %}{% endblock %}</p>
+            </div>
+            <div class="account">
+                <span>{{ aktif_yonetici }}</span>
+                <form method="post" action="{{ url_for('logout') }}">
+                    <button class="button ghost" type="submit">Çıkış</button>
+                </form>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

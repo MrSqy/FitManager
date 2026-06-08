@@ -1,0 +1,9 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+debug.md
+tutorial.md
+tutorial_ders_kitabi.*
+sql_islemleri_raporu.md

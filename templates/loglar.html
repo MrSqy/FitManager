@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Yönetici Logları{% endblock %}
+{% block page_title %}Yönetici Logları{% endblock %}
+{% block page_subtitle %}Giriş denemeleri ve kritik işlemler{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Zaman</th>
+                    <th>Olay</th>
+                    <th>Yönetici</th>
+                    <th>Detay</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in loglar %}
+                    <tr>
+                        <td>{{ log.olay_zamani|datetimefmt }}</td>
+                        <td><span class="badge">{{ log.olay_tipi }}</span></td>
+                        <td>{{ log.ad_soyad or '-' }}</td>
+                        <td>{{ log.detay or '-' }}</td>
+                        <td>{{ log.ip_adresi or '-' }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">Log kaydı yok.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

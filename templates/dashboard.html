@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Operasyon özeti ve gelir görünümü{% endblock %}
+
+{% block content %}
+<section class="metric-grid">
+    <article class="metric">
+        <span>Aktif Sporcu</span>
+        <strong>{{ stats.aktif_sporcu }}</strong>
+    </article>
+    <article class="metric">
+        <span>Bu Ay Gelir</span>
+        <strong>{{ stats.aylik_gelir|money }}</strong>
+    </article>
+    <article class="metric warning">
+        <span>7 Günde Bitecek</span>
+        <strong>{{ stats.yaklasan_bitis }}</strong>
+    </article>
+    <article class="metric">
+        <span>Çalışan</span>
+        <strong>{{ stats.calisan_sayisi }}</strong>
+    </article>
+</section>
+
+<section class="split-grid">
+    <article class="panel">
+        <div class="panel-head">
+            <h2>Plan Dağılımı</h2>
+        </div>
+        <div class="chart-box">
+            <canvas id="planChart"></canvas>
+        </div>
+    </article>
+    <article class="panel">
+        <div class="panel-head">
+            <h2>Son 6 Ay Gelir</h2>
+        </div>
+        <div class="chart-box">
+            <canvas id="incomeChart"></canvas>
+        </div>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>Yakında Bitecek Üyelikler</h2>
+        <a class="button secondary" href="{{ url_for('sorgular') }}">Tüm Sorgular</a>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sporcu</th>
+                    <th>Telefon</th>
+                    <th>Plan</th>
+                    <th>Bitiş</th>
+                    <th>Kalan Gün</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in ending_memberships %}
+                    <tr>
+                        <td>{{ row.ad }} {{ row.soyad }}</td>
+                        <td>{{ row.telefon }}</td>
+                        <td><span class="badge">{{ row.plan_adi }}</span></td>
+                        <td>{{ row.bitis_tarihi|datefmt }}</td>
+                        <td>{{ row.kalan_gun }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">Yakında bitecek üyelik yok.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

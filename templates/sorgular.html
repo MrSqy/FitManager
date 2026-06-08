@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Sorgular{% endblock %}
+{% block page_title %}Sorgular{% endblock %}
+{% block page_subtitle %}Operasyonel ve analitik SQL çıktıları{% endblock %}
+
+{% block content %}
+<section class="report-grid">
+    <article class="panel">
+        <div class="panel-head"><h2>7 Gün İçinde Bitecek Üyelikler</h2></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Sporcu</th><th>Plan</th><th>Bitiş</th><th>Kalan</th></tr></thead>
+                <tbody>
+                    {% for row in reports.yaklasan %}
+                        <tr><td>{{ row.sporcu }}</td><td>{{ row.plan_adi }}</td><td>{{ row.bitis_tarihi|datefmt }}</td><td>{{ row.kalan_gun }}</td></tr>
+                    {% else %}
+                        <tr><td colspan="4" class="empty">Sonuç yok.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-head"><h2>PT Başına Aktif Sporcu</h2></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>PT</th><th>Aktif Sporcu</th></tr></thead>
+                <tbody>
+                    {% for row in reports.pt_yuku %}
+                        <tr><td>{{ row.pt }}</td><td>{{ row.aktif_sporcu }}</td></tr>
+                    {% else %}
+                        <tr><td colspan="2" class="empty">Sonuç yok.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-head"><h2>Diyetisyen Başına Aktif Sporcu</h2></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Diyetisyen</th><th>Aktif Sporcu</th></tr></thead>
+                <tbody>
+                    {% for row in reports.diyetisyen_yuku %}
+                        <tr><td>{{ row.diyetisyen }}</td><td>{{ row.aktif_sporcu }}</td></tr>
+                    {% else %}
+                        <tr><td colspan="2" class="empty">Sonuç yok.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-head"><h2>Aylık Toplam Gelir</h2></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Ay</th><th>Toplam Gelir</th></tr></thead>
+                <tbody>
+                    {% for row in reports.aylik_gelir %}
+                        <tr><td>{{ row.ay }}</td><td>{{ row.toplam_gelir|money }}</td></tr>
+                    {% else %}
+                        <tr><td colspan="2" class="empty">Sonuç yok.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-head"><h2>Plan Türüne Göre Dağılım</h2></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Plan</th><th>Aktif Sporcu</th></tr></thead>
+                <tbody>
+                    {% for row in reports.plan_dagilimi %}
+                        <tr><td>{{ row.plan_adi }}</td><td>{{ row.aktif_sporcu }}</td></tr>
+                    {% else %}
+                        <tr><td colspan="2" class="empty">Sonuç yok.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel wide">
+        <div class="panel-head"><h2>Kalan Gün Bilgisiyle Aktif Üyelikler</h2></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Sporcu</th><th>Plan</th><th>Başlangıç</th><th>Bitiş</th><th>Kalan</th></tr></thead>
+                <tbody>
+                    {% for row in reports.aktif_kalan %}
+                        <tr>
+                            <td>{{ row.sporcu }}</td>
+                            <td>{{ row.plan_adi }}</td>
+                            <td>{{ row.baslangic_tarihi|datefmt }}</td>
+                            <td>{{ row.bitis_tarihi|datefmt }}</td>
+                            <td>{{ row.kalan_gun }}</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="5" class="empty">Sonuç yok.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

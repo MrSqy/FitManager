@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Ödemeler{% endblock %}
+{% block page_title %}Ödemeler{% endblock %}
+{% block page_subtitle %}Tahsilat ve kalan borç takibi{% endblock %}
+
+{% block content %}
+<section class="toolbar">
+    <a class="button primary" href="{{ url_for('odeme_yeni') }}">Yeni Ödeme</a>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>Aktif Üyelik Borçları</h2>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Üyelik</th>
+                    <th>Sporcu</th>
+                    <th>Plan</th>
+                    <th>Tutar</th>
+                    <th>Ödenen</th>
+                    <th>Kalan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in memberships %}
+                    <tr>
+                        <td>#{{ row.uyelik_id }}</td>
+                        <td>{{ row.sporcu_ad }}</td>
+                        <td>{{ row.plan_adi }}</td>
+                        <td>{{ row.tutar|money }}</td>
+                        <td>{{ row.odenen|money }}</td>
+                        <td>{{ row.kalan|money }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="empty">Aktif üyelik yok.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>Son Ödemeler</h2>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Sporcu</th>
+                    <th>Plan</th>
+                    <th>Yöntem</th>
+                    <th>Tutar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for odeme in odemeler %}
+                    <tr>
+                        <td>{{ odeme.odeme_tarihi|datefmt }}</td>
+                        <td>
+                            {{ odeme.sporcu_ad or '-' }}
+                            {% if odeme.silinmis %}<span class="badge muted">silinmiş</span>{% endif %}
+                        </td>
+                        <td>{{ odeme.plan_adi or '-' }}</td>
+                        <td>{{ odeme.odeme_yontemi }}</td>
+                        <td>{{ odeme.tutar|money }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">Ödeme yok.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

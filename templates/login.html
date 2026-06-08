@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yönetici Girişi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="login-body">
+    <section class="login-panel">
+        <div class="login-copy">
+            <span class="brand-mark large">SS</span>
+            <h1>Spor Salonu Yönetimi</h1>
+            <p>Üyelik, ödeme, atama ve rapor süreçleri tek panelde.</p>
+            <span class="owner-line">Sahibi: Baran Demir</span>
+        </div>
+        <form class="login-form" method="post">
+            <h2>Yönetici Girişi</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <label>
+                Email
+                <input type="email" name="email" required>
+            </label>
+            <label>
+                Şifre
+                <input type="password" name="password" required>
+            </label>
+            <button class="button primary full" type="submit">Giriş Yap</button>
+        </form>
+    </section>
+</body>
+</html>

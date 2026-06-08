@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Yeni Üyelik{% endblock %}
+{% block page_title %}Yeni Üyelik{% endblock %}
+{% block page_subtitle %}Plan, süre, ücret ve zorunlu atama kuralları{% endblock %}
+
+{% block content %}
+<section class="split-grid align-start">
+    <article class="panel">
+        <form class="form-grid" method="post" id="membershipForm">
+            <label>
+                Sporcu
+                <select name="sporcu_id" required>
+                    <option value="">Seçiniz</option>
+                    {% for sporcu in refs.sporcular %}
+                        <option value="{{ sporcu.sporcu_id }}">{{ sporcu.ad }} {{ sporcu.soyad }} - {{ sporcu.telefon }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                Plan
+                <select name="plan_id" id="planSelect" required>
+                    <option value="">Seçiniz</option>
+                    {% for plan in refs.planlar %}
+                        <option value="{{ plan.plan_id }}" data-name="{{ plan.plan_adi }}" data-price="{{ plan.aylik_ucret }}">
+                            {{ plan.plan_adi }} - {{ plan.aylik_ucret|money }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                Süre
+                <select name="sure_id" id="durationSelect" required>
+                    <option value="">Seçiniz</option>
+                    {% for sure in refs.sureler %}
+                        <option value="{{ sure.sure_id }}" data-months="{{ sure.ay }}" data-factor="{{ sure.katsayi }}">
+                            {{ sure.ay }} ay - katsayı {{ sure.katsayi }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                Başlangıç Tarihi
+                <input type="date" name="baslangic_tarihi" id="startDate" value="{{ today }}" required>
+            </label>
+            <label id="dietitianField">
+                Diyetisyen
+                <select name="diyetisyen_id" id="dietitianSelect">
+                    <option value="">Atama yok</option>
+                    {% for calisan in refs.diyetisyenler %}
+                        <option value="{{ calisan.calisan_id }}">{{ calisan.ad }} {{ calisan.soyad }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label id="ptField">
+                PT
+                <select name="pt_id" id="ptSelect">
+                    <option value="">Atama yok</option>
+                    {% for calisan in refs.ptler %}
+                        <option value="{{ calisan.calisan_id }}">{{ calisan.ad }} {{ calisan.soyad }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <div class="form-actions">
+                <button class="button primary" type="submit">Üyelik Oluştur</button>
+            </div>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-head">
+            <h2>Hesaplama</h2>
+        </div>
+        <dl class="summary-list">
+            <div>
+                <dt>Plan</dt>
+                <dd id="previewPlan">-</dd>
+            </div>
+            <div>
+                <dt>Bitiş Tarihi</dt>
+                <dd id="previewEnd">-</dd>
+            </div>
+            <div>
+                <dt>Tutar</dt>
+                <dd id="previewAmount">-</dd>
+            </div>
+            <div>
+                <dt>Kural</dt>
+                <dd id="previewRule">Temel plan için atama opsiyonel.</dd>
+            </div>
+        </dl>
+    </article>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const planSelect = document.getElementById("planSelect");
+const durationSelect = document.getElementById("durationSelect");
+const startDate = document.getElementById("startDate");
+const dietitianSelect = document.getElementById("dietitianSelect");
+const ptSelect = document.getElementById("ptSelect");
+
+function formatDate(date) {
+    return date.toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function formatMoney(value) {
+    return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(value);
+}
+
+function addMonths(value, months) {
+    const date = new Date(value + "T00:00:00");
+    const day = date.getDate();
+    date.setMonth(date.getMonth() + months);
+    if (date.getDate() !== day) date.setDate(0);
+    return date;
+}
+
+function updateMembershipPreview() {
+    const planOption = planSelect.selectedOptions[0];
+    const durationOption = durationSelect.selectedOptions[0];
+    const planName = planOption?.dataset.name || "-";
+    const price = Number(planOption?.dataset.price || 0);
+    const factor = Number(durationOption?.dataset.factor || 0);
+    const months = Number(durationOption?.dataset.months || 0);
+
+    dietitianSelect.required = planName === "Profesyonel" || planName === "VIP";
+    ptSelect.required = planName === "VIP";
+
+    document.getElementById("previewPlan").textContent = planName;
+    document.getElementById("previewAmount").textContent = price && factor ? formatMoney(price * factor) : "-";
+    document.getElementById("previewEnd").textContent = startDate.value && months ? formatDate(addMonths(startDate.value, months)) : "-";
+
+    let rule = "Temel plan için atama opsiyonel.";
+    if (planName === "Profesyonel") rule = "Profesyonel plan için diyetisyen zorunlu.";
+    if (planName === "VIP") rule = "VIP plan için diyetisyen ve PT zorunlu.";
+    document.getElementById("previewRule").textContent = rule;
+}
+
+[planSelect, durationSelect, startDate, dietitianSelect, ptSelect].forEach((el) => {
+    el.addEventListener("change", updateMembershipPreview);
+});
+updateMembershipPreview();
+</script>
+{% endblock %}

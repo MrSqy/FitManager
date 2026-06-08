@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Çalışan Düzenle' if calisan else 'Yeni Çalışan' }}{% endblock %}
+{% block page_title %}{{ 'Çalışan Düzenle' if calisan else 'Yeni Çalışan' }}{% endblock %}
+{% block page_subtitle %}Personel bilgileri ve rol tanımı{% endblock %}
+
+{% block content %}
+<section class="panel narrow">
+    <form class="form-grid" method="post">
+        <label>
+            Ad
+            <input name="ad" value="{{ calisan.ad if calisan else '' }}" required maxlength="50">
+        </label>
+        <label>
+            Soyad
+            <input name="soyad" value="{{ calisan.soyad if calisan else '' }}" required maxlength="50">
+        </label>
+        <label>
+            Telefon
+            <input name="telefon" value="{{ calisan.telefon if calisan else '' }}" required maxlength="20">
+        </label>
+        <label>
+            Rol
+            <select name="rol" required>
+                {% for role in ['PT', 'DIYETISYEN', 'DIGER'] %}
+                    <option value="{{ role }}" {{ 'selected' if calisan and calisan.rol == role else '' }}>{{ role }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Maaş
+            <input type="number" step="0.01" name="maas" value="{{ calisan.maas if calisan else '' }}" required>
+        </label>
+        <label>
+            Mesai Başlangıç
+            <input type="time" name="mesai_baslangic" value="{{ calisan.mesai_baslangic if calisan else '09:00' }}" required>
+        </label>
+        <label>
+            Mesai Bitiş
+            <input type="time" name="mesai_bitis" value="{{ calisan.mesai_bitis if calisan else '18:00' }}" required>
+        </label>
+        <div class="form-actions">
+            <a class="button ghost" href="{{ url_for('calisanlar') }}">Vazgeç</a>
+            <button class="button primary" type="submit">Kaydet</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
